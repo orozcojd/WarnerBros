@@ -74,7 +74,7 @@ export default {
       return this.expandCard ? this.arrowDown : this.arrowUp
     },
     img () {
-      return this.imgUrl + '/' + this.data.backdrop_path
+      return this.imgUrl + '/' + this.data.poster_path
     }
   },
   data () {
@@ -86,7 +86,9 @@ export default {
     }
   },
   async created () {
-    this.loading = false
+    setTimeout(() => {
+      this.loading = false
+    }, 1000)
   },
   methods: {
     async newImg () {

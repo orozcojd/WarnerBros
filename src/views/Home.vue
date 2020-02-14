@@ -6,38 +6,29 @@
     <div class="categories">
       <div
         class="categories__item"
-        v-for="c in categories"
-        :key="c"
+        v-for="category in categories"
+        :key="category"
       >
-        {{ c }}
+        {{ category }}
       </div>
       <div>
         <img
-          key="expand"
+          key="view-module"
           src="@/assets/view_module-24px.svg"
           alt="view-module"
         >
         <img
-          key="expand"
+          key="view-list"
           src="@/assets/view_list-24px.svg"
-          alt="module"
+          alt="view-list"
         >
       </div>
     </div>
-    <div>
-      <label for="movie-search">Search</label>
-      <input
-        v-model="movieComputed"
-        type="search"
-        name="movie-search"
-        placeholder="Movies..."
-        id="movie-search"
-      >
-    </div>
+    <entertainment-selects/>
     <div
       v-if="movies.length && filterMovies.length"
       key="filterMovies"
-      class="container--flex"
+      class="flex--between mt--md"
     >
       <entertainment-card
         v-for="movie in filterMovies"
@@ -49,28 +40,40 @@
         </template>
       </entertainment-card>
     </div>
-    <div
+    <div id="mediaLoadBtn">
+      <base-button
+        ref="media__loader"
+        name="load more"
+        :on-click="loadMore"
+        size="lg"
+      />
+    </div>
+    <!-- <div
       class="container"
       v-else-if="loaded && !filterMovies.length"
       key="noResults"
     >
       <h1>Try refining your search...</h1>
-    </div>
+    </div> -->
   </div>
 </template>
 <script async src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
 <script>
 import EntertainmentCard from '@/components/EntertainmentCard'
+import EntertainmentSelects from '@/components/EntertainmentSelects'
+import BaseButton from '@/components/BaseButton'
 import { mapActions, mapState } from 'vuex'
 import _ from 'lodash'
 export default {
   name: 'Home',
   components: {
-    EntertainmentCard
+    EntertainmentCard,
+    EntertainmentSelects,
+    BaseButton
   },
   data () {
     return {
-      loaded: false,
+      loading: true,
       breedInfo: '',
       dbBreedInfo: '',
       categories: ['All', 'Movies', 'TV Shows', 'Games and Apps', 'Blog',  'Other'],
@@ -94,11 +97,46 @@ export default {
   },
   async mounted () {
     await this.fetchMovies()
-    this.loaded = true
+    this.loading = false
     console.log(this.movies)
   },
   methods: {
     ...mapActions(['fetchMovies']),
+    async loadMore() {
+      console.log('loading more...')
+      console.log(this.page)
+      await this.fetchMovies(this.page)
+      // this.loadBar(this.$refs.media__loader)
+    },
+    // loadBar (e, domNode) {
+    //   let elm
+    //   if (domNode) elm = domNode
+    //   else { elm = e }
+    //   elm.style.display = 'block'
+    //   let width = 0
+    //   let id = setInterval(f, 20)
+    //   let vm = this
+    //   function f () {
+    //     if (width >= 97 && vm.loading) {
+    //       width = 97
+    //       elm.style.width = width
+    //     }
+    //     if (width >= 80 && vm.loading) {
+    //       width += 0.2
+    //       elm.style.width = width
+    //     }
+    //     if (width >= 100 || !vm.loading) {
+    //       elm.style.width = '100%'
+    //       setTimeout(() => {
+    //         elm.style.display = 'none'
+    //       }, 500)
+    //       clearInterval(id)
+    //     } else {
+    //       width++
+    //       elm.style.width = width + '%'
+    //     }
+    //   }
+    // }
   }
 }
 </script>
@@ -109,6 +147,8 @@ export default {
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
+    flex-wrap: wrap;
+    align-items: center;
   }
   .categories img {
     padding: 1em 0 1em 1em;
@@ -127,8 +167,14 @@ export default {
     border-radius:5px;
     margin-top: 1em;
   }
-  .container--flex {
+  #mediaLoadBtn {
+    display: flex;
+    justify-content: center;
+  }
+  .mt--md {
     margin-top: 2em;
+  }
+  .flex--between {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -140,6 +186,7 @@ export default {
     margin-top: 1em;
     color: #959CA0;
   }
+
   @media all and (max-width: 743px) {
     .container {
       padding: .5em;
