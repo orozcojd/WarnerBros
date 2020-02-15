@@ -13,11 +13,17 @@
       </div>
       <div>
         <img
+          class="grid__layout"
+          :class="{'grid__selected': gridView}"
+          @click="gridView = true"
           key="view-module"
           src="@/assets/view_module-24px.svg"
           alt="view-module"
         >
         <img
+          class="grid__layout"
+          :class="{'grid__selected': !gridView}"
+          @click="gridView = false"
           key="view-list"
           src="@/assets/view_list-24px.svg"
           alt="view-list"
@@ -28,17 +34,36 @@
     <div
       v-if="movies.length && filterMovies.length"
       key="filterMovies"
-      class="flex--between mt--md"
     >
-      <entertainment-card
-        v-for="movie in filterMovies"
-        :key="movie.id"
-        :data="movie"
+      <div
+        v-show="gridView"
+        class="flex--between mt--md"
       >
-        <template v-slot:media-type>
-          <div class="media-type">Movies</div>
-        </template>
-      </entertainment-card>
+        <entertainment-card
+          v-for="movie in filterMovies"
+          :key="movie.id"
+          :data="movie"
+        >
+          <template v-slot:media-type>
+            <div class="mt-sm media-type">Movies</div>
+          </template>
+        </entertainment-card>
+      </div>
+      <div
+        v-show="!gridView"
+        class="flex--between mt--md"
+      >
+        <entertainment-list-card
+          v-for="movie in filterMovies"
+          :key="movie.id"
+          :data="movie"
+        >
+          <template v-slot:media-type>
+            <div class="media-type">Movies</div>
+          </template>
+        </entertainment-list-card>
+      </div>
+
     </div>
     <div id="mediaLoadBtn">
       <base-button
@@ -60,6 +85,7 @@
 <script async src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
 <script>
 import EntertainmentCard from '@/components/EntertainmentCard'
+import EntertainmentListCard from '@/components/EntertainmentListCard'
 import EntertainmentSelects from '@/components/EntertainmentSelects'
 import BaseButton from '@/components/BaseButton'
 import { mapActions, mapState } from 'vuex'
@@ -68,14 +94,16 @@ export default {
   name: 'Home',
   components: {
     EntertainmentCard,
+    EntertainmentListCard,
     EntertainmentSelects,
     BaseButton
   },
   data () {
     return {
       loading: true,
-      breedInfo: '',
-      dbBreedInfo: '',
+      gridView: true,
+      mediaInfo: '',
+      dbmediaInfo: '',
       categories: ['All', 'Movies', 'TV Shows', 'Games and Apps', 'Blog',  'Other'],
     }
   },
@@ -88,25 +116,24 @@ export default {
     },
     movieComputed: {
       get() {
-        return this.breedInfo
+        return this.mediaInfo
       },
       set:_.debounce(function(val) {
-        this.breedInfo = val
+        this.mediaInfo = val
       }, 300)
     }
   },
   async mounted () {
-    await this.fetchMovies()
+    // await this.fetchMovies()
     this.loading = false
     console.log(this.movies)
   },
   methods: {
-    ...mapActions(['fetchMovies']),
+    // ...mapActions(['fetchMovies']),
     async loadMore() {
-      console.log('loading more...')
-      console.log(this.page)
-      await this.fetchMovies(this.page)
+      // await this.fetchMovies(this.page)
       // this.loadBar(this.$refs.media__loader)
+
     },
     // loadBar (e, domNode) {
     //   let elm
@@ -150,8 +177,17 @@ export default {
     flex-wrap: wrap;
     align-items: center;
   }
+  img {
+    cursor: pointer;
+  }
+  .grid__selected {
+    background: #859D8A;
+  }
+  .grid__layout:hover {
+    background: #E7F1E9;
+  }
   .categories img {
-    padding: 1em 0 1em 1em;
+    margin: 1em 0 1em 1em;
   }
   .categories__item {
     padding: 1em;
@@ -171,6 +207,9 @@ export default {
     display: flex;
     justify-content: center;
   }
+  .mt-sm {
+    margin-top: 1em;
+  }
   .mt--md {
     margin-top: 2em;
   }
@@ -183,7 +222,6 @@ export default {
     /* margin-left: 1em; */
   }
   .media-type {
-    margin-top: 1em;
     color: #959CA0;
   }
 

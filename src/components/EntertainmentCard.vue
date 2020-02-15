@@ -1,5 +1,5 @@
 <template>
-  <div class="breed-card">
+  <div class="media-card">
     <transition name="overlay">
       <div
         v-if="loading"
@@ -7,25 +7,22 @@
         :style="loadingColor"
       />
     </transition>
-    <div
-      @click="newImg"
-      class="breed-img"
-    >
+    <div class="media-img">
       <img
         :src="img"
-        alt="breed-img"
+        alt="movie-img"
         loading="lazy"
       >
     </div>
     <div
-      ref="img__loader"
-      class="breed-img--loader"/>
-    <div class="breed-card__inner">
+      ref="movie__loader"
+      class="media-img--loader"/>
+    <div class="media-card__inner">
       <slot name="media-type" />
       <h2>{{ data.title }}</h2>
       <!-- <div v-if="movies.length">
         <div
-          class="breed-card--expand"
+          class="media-card--expand"
           @click="expandCard = !expandCard"
         >
           <img
@@ -46,11 +43,9 @@
 </template>
 
 <script>
-import EntertainmentCardDetails from '@/components/EntertainmentCardDetails'
 export default {
   name: 'EntertainmentCard',
   components: {
-    EntertainmentCardDetails
   },
   props: {
     data: {
@@ -91,52 +86,16 @@ export default {
     }, 1000)
   },
   methods: {
-    async newImg () {
-      this.imgLoading = true
-      this.loadBar(this.$refs.img__loader)
-      await this.fetchBreedImg()
-    },
     newColor () {
       return Math.floor(Math.random() * 9999999).toString(16)
-    },
-    /*
-     * starts loading bar incrementing in intervals
-     */
-    loadBar (e, domNode) {
-      let elm
-      if (domNode) elm = domNode
-      else { elm = e }
-      elm.style.display = 'block'
-      let width = 0
-      let id = setInterval(f, 20)
-      let vm = this
-      function f () {
-        if (width >= 97 && vm.imgLoading) {
-          width = 97
-          elm.style.width = width
-        }
-        if (width >= 80 && vm.imgLoading) {
-          width += 0.2
-          elm.style.width = width
-        }
-        if (width >= 100 || !vm.imgLoading) {
-          elm.style.width = '100%'
-          setTimeout(() => {
-            elm.style.display = 'none'
-          }, 500)
-          clearInterval(id)
-        } else {
-          width++
-          elm.style.width = width + '%'
-        }
-      }
     }
+
   }
 }
 </script>
 
 <style scoped>
-  .breed-card {
+  .media-card {
     position: relative;
     /* text-align: center; */
     justify-content: start;
@@ -145,13 +104,13 @@ export default {
     margin: 1em 0;
     word-break: break-all;
   }
-  .breed-card__inner {
+  .media-card__inner {
     padding: 0 1em 2em 1em;
   }
-  .breed-card__inner h2{
+  .media-card__inner h2{
     margin-top: .5em;
   }
-  .breed-card--expand {
+  .media-card--expand {
     margin: auto;
     background: #CEDEEA;
     border-radius: 100%;
@@ -159,10 +118,10 @@ export default {
     opacity: .8;
     cursor: pointer;
   }
-  .breed-card--expand:hover {
+  .media-card--expand:hover {
     background: #ffffff;
   }
-  .breed-card--expand img {
+  .media-card--expand img {
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -170,21 +129,21 @@ export default {
   .expand {
     cursor: pointer;
   }
-  .breed-img {
+  .media-img {
     height: 400px;
   }
-  .breed-img--loader {
+  .media-img--loader {
     border: 2px solid#CEDEEA;
     width: 0;
     display: none;
   }
-  .breed-img img {
+  .media-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: .7;
   }
-  .breed-img img:hover {
+  .media-img img:hover {
     cursor: pointer;
     opacity: 1;
   }
@@ -195,7 +154,7 @@ export default {
     opacity: 0;
   }
   @media all and (max-width: 600px) {
-    .breed-card {
+    .media-card {
       width: 100%;
     }
   }
