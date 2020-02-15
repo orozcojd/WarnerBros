@@ -1,4 +1,6 @@
 export const EXAMPLE_MUTATION = 'exampleMutation'
-export const SET_MOVIES = 'setMovies'
+export const SET_MEDIA = 'setMedia'
 export const SET_PAGE = 'setPage'
 export const SET_GENRES = 'setGenres'
+export const CLEAR_MEDIA = 'clearMedia'
+export const CLEAR_PAGE = 'clearPage'

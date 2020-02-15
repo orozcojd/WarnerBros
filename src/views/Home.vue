@@ -4,48 +4,54 @@
       <h1>Search Results</h1>
     </div>
     <div class="categories">
-      <div
+      <button
+        v-for="c in categories"
+        :key="c.type"
+        :disabled="c.disabled"
+        @click="selectCategory(c)"
+        @mouseover="hover = true"
+        @mouseleave="hover = false"
         class="categories__item"
-        v-for="category in categories"
-        :key="category"
+        :class="{
+          'item__selected': selectedCategory.type===c.type,
+          'item__hover': (hover && c.type !==selectedCategory.type)
+        }"
       >
-        {{ category }}
-      </div>
-      <div>
-        <img
-          class="grid__layout"
-          :class="{'grid__selected': gridView}"
-          @click="gridView = true"
-          key="view-module"
-          src="@/assets/view_module-24px.svg"
-          alt="view-module"
-        >
-        <img
-          class="grid__layout"
-          :class="{'grid__selected': !gridView}"
-          @click="gridView = false"
-          key="view-list"
-          src="@/assets/view_list-24px.svg"
-          alt="view-list"
-        >
-      </div>
+        {{ c.type }}
+      </button>
+      <img
+        class="item__hover"
+        :class="{'item__selected': gridView}"
+        @click="gridView = true"
+        key="view-module"
+        src="@/assets/view_module-24px.svg"
+        alt="view-module"
+      >
+      <img
+        class="item__hover"
+        :class="{'item__selected': !gridView}"
+        @click="gridView = false"
+        key="view-list"
+        src="@/assets/view_list-24px.svg"
+        alt="view-list"
+      >
     </div>
     <entertainment-selects/>
     <div
-      v-if="movies.length && filterMovies.length"
-      key="filterMovies"
+      v-if="media.length && filterMedia.length"
+      key="filterMedia"
     >
       <div
         v-show="gridView"
         class="flex--between mt--md"
       >
         <entertainment-card
-          v-for="movie in filterMovies"
-          :key="movie.id"
-          :data="movie"
+          v-for="media in filterMedia"
+          :key="media.id"
+          :data="media"
         >
           <template v-slot:media-type>
-            <div class="mt-sm media-type">Movies</div>
+            <div class="mt-sm media-type">{{ selectedCategory.type }}</div>
           </template>
         </entertainment-card>
       </div>
@@ -54,24 +60,23 @@
         class="flex--between mt--md"
       >
         <entertainment-list-card
-          v-for="movie in filterMovies"
-          :key="movie.id"
-          :data="movie"
+          v-for="media in filterMedia"
+          :key="media.id"
+          :data="media"
         >
           <template v-slot:media-type>
-            <div class="media-type">Movies</div>
+            <div class="media-type">{{ selectedCategory.type }}</div>
           </template>
         </entertainment-list-card>
       </div>
-
-    </div>
-    <div id="mediaLoadBtn">
-      <base-button
-        ref="media__loader"
-        name="load more"
-        :on-click="loadMore"
-        size="lg"
-      />
+      <div id="mediaLoadBtn">
+        <base-button
+          ref="media__loader"
+          name="load more"
+          :on-click="loadMore"
+          size="lg"
+        />
+      </div>
     </div>
     <!-- <div
       class="container"
@@ -102,73 +107,78 @@ export default {
     return {
       loading: true,
       gridView: true,
+      hover: false,
+      selectedCategory: null,
       mediaInfo: '',
       dbmediaInfo: '',
-      categories: ['All', 'Movies', 'TV Shows', 'Games and Apps', 'Blog',  'Other'],
+      categories: [{
+          type: 'All',
+          route: '',
+          disabled: true
+        },
+        {
+          type: 'Movies',
+          route: '/discover/movie?page='
+        },
+        {
+          type: 'TV Shows',
+          route: '/tv/popular?page='
+        },
+        {
+          type: 'Games and Apps',
+          route: '',
+          disabled: true
+        },
+        {
+          type: 'Blog',
+          route: '',
+          disabled: true
+        },
+        {
+          type: 'Other',
+          route: '',
+          disabled: true
+        }],
     }
   },
   computed: {
-    ...mapState(['movies', 'page']),
-    filterMovies () {
-      if (this.movies.length) {
-        return this.movies
+    ...mapState(['media', 'page']),
+    filterMedia () {
+      if (this.media.length) {
+        return this.media
       }
     },
-    movieComputed: {
-      get() {
-        return this.mediaInfo
-      },
-      set:_.debounce(function(val) {
-        this.mediaInfo = val
-      }, 300)
-    }
   },
-  async mounted () {
-    // await this.fetchMovies()
+  async created () {
+    this.selectedCategory = this.categories[1]
+    // await this.fetchMedia({route: this.selectedCategory.route})
     this.loading = false
-    console.log(this.movies)
   },
   methods: {
-    // ...mapActions(['fetchMovies']),
+    ...mapActions(['fetchMedia', 'resetMedia']),
     async loadMore() {
-      // await this.fetchMovies(this.page)
-      // this.loadBar(this.$refs.media__loader)
-
+      await this.fetchMedia({
+        route:this.selectedCategory.route,
+        page: this.page
+        })
     },
-    // loadBar (e, domNode) {
-    //   let elm
-    //   if (domNode) elm = domNode
-    //   else { elm = e }
-    //   elm.style.display = 'block'
-    //   let width = 0
-    //   let id = setInterval(f, 20)
-    //   let vm = this
-    //   function f () {
-    //     if (width >= 97 && vm.loading) {
-    //       width = 97
-    //       elm.style.width = width
-    //     }
-    //     if (width >= 80 && vm.loading) {
-    //       width += 0.2
-    //       elm.style.width = width
-    //     }
-    //     if (width >= 100 || !vm.loading) {
-    //       elm.style.width = '100%'
-    //       setTimeout(() => {
-    //         elm.style.display = 'none'
-    //       }, 500)
-    //       clearInterval(id)
-    //     } else {
-    //       width++
-    //       elm.style.width = width + '%'
-    //     }
-    //   }
-    // }
+    async selectCategory(c) {
+      if(c!== this.selectedCategory) {
+        this.selectedCategory = c
+        this.resetMedia()
+        await this.fetchMedia({route:this.selectedCategory.route})
+      }
+    },
   }
 }
 </script>
 
 <style scoped>
+  button {
+    background: inherit;
+    outline: inherit;
+    cursor: pointer;
+  }
   .categories {
     width: 100%;
     display: flex;
@@ -177,20 +187,21 @@ export default {
     flex-wrap: wrap;
     align-items: center;
   }
-  img {
-    cursor: pointer;
-  }
-  .grid__selected {
-    background: #859D8A;
-  }
-  .grid__layout:hover {
-    background: #E7F1E9;
-  }
-  .categories img {
-    margin: 1em 0 1em 1em;
-  }
   .categories__item {
     padding: 1em;
+    margin: 0.4em;
+    border: none;
+  }
+  .item__selected {
+    border-bottom: 4px solid #859D8A;
+    transition: all .5s ease-in;
+  }
+  .item__hover:hover {
+    border-bottom: 4px solid #E7F1E9;
+  }
+  .categories img {
+    cursor: pointer;
+    margin: 1em 0 1em 1em;
   }
   .container {
     padding: 2em;
@@ -218,13 +229,9 @@ export default {
     flex-wrap: wrap;
     justify-content: space-between;
   }
-  .title {
-    /* margin-left: 1em; */
-  }
   .media-type {
     color: #959CA0;
   }
-
   @media all and (max-width: 743px) {
     .container {
       padding: .5em;

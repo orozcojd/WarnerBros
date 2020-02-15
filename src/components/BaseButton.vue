@@ -59,6 +59,7 @@ export default {
 <style scoped>
   button {
     background: inherit;
+    outline: inherit;
     cursor: pointer;
     font-weight: bold;
   }

@@ -19,7 +19,7 @@
       class="media-img--loader"/>
     <div class="media-card__inner">
       <slot name="media-type" />
-      <h2>{{ data.title }}</h2>
+      <h2>{{ data.title || data.name }}</h2>
       <!-- <div v-if="movies.length">
         <div
           class="media-card--expand"
@@ -100,7 +100,7 @@ export default {
     /* text-align: center; */
     justify-content: start;
     background:#E7F1E9;
-    width: 300px;
+    width: 250px;
     margin: 1em 0;
     word-break: break-all;
   }

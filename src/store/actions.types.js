@@ -1,4 +1,6 @@
 export const EXAMPLE = 'exampleAction'
-export const FETCH_MOVIES = 'fetchMovies'
+export const FETCH_MEDIA = 'fetchMedia'
+export const RESET_MEDIA = 'resetMedia'
+export const RESET_PAGE = 'resetPage'
 export const INC_PAGE = 'incPage'
 export const FETCH_GENRES = 'fetchGenres'

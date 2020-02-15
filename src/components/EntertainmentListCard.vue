@@ -7,7 +7,7 @@
     >
     <div class='list__card__details'>
       <slot name="media-type" />
-      <h2>{{ data.title }}</h2>
+      <h2>{{ data.title || data.name }}</h2>
       <p>{{ data.overview }}</p>
     </div>
   </div>

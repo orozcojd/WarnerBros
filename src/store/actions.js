@@ -1,23 +1,29 @@
-import { INC_PAGE } from './actions.types'
-import { SET_PAGE, SET_MOVIES } from './mutations.types'
+import { INC_PAGE, FETCH_MEDIA, FETCH_GENRES, RESET_MEDIA, RESET_PAGE } from './actions.types'
+import { SET_PAGE, SET_MEDIA, CLEAR_MEDIA, CLEAR_PAGE } from './mutations.types'
 import { ApiService } from '@/common/api.service'
 
 export default {
-  async fetchMovies ({ commit, dispatch }, page = 1) {
+  async [FETCH_MEDIA] ({ commit, dispatch }, payload) {
     try {
-      const { data } = await ApiService().get(`/discover/movie?page=${page}`)
-      console.log(data.results)
-      dispatch(INC_PAGE, ++data.page)
-      commit(SET_MOVIES, data.results)
+      const { data } = await ApiService().get(`${payload.route}${payload.page}`)
+      dispatch(INC_PAGE, data.page + 1)
+      commit(SET_MEDIA, data.results)
     } catch (e) {
       console.log(e)
     }
   },
-  incPage ({ commit }, pageNo) {
+
+  [INC_PAGE] ({ commit }, pageNo) {
     commit(SET_PAGE, pageNo)
   },
-  async fetchGenres ({commit}, media) {
+  async [FETCH_GENRES] ({commit}, media) {
     const { data } = await ApiService().get(`/genre/${media}/list`)
     return data
+  },
+  [RESET_MEDIA] ({commit}) {
+    commit(CLEAR_MEDIA)
+  },
+  [RESET_PAGE] ({commit}) {
+    commit(CLEAR_PAGE)
   }
 }
