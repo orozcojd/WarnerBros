@@ -1,29 +1,29 @@
 <template>
   <div class="flex flex--between">
     <div class="flex flex--start selectFilters__selectors">
-      <check-box
+      <select-radio
         v-model="releaseYear.selected"
         :data="releaseYear.options"
-        :checked-data="releaseYear.selected"
+        ref="selectRadio"
       >
         Release Year
-      </check-box>
-      <check-box
+      </select-radio>
+      <select-checkbox
         v-model="genres.selected"
         :data="genres.options"
-        :checked-data="genres.selected"
+        ref="selectCheckbox"
       >
         Genres
-      </check-box>
+      </select-checkbox>
       <!-- all elms with disabled attr share same object for simplicity -->
-      <check-box
+      <select-checkbox
         :disabled="true"
         v-model="genres.selected"
         :data="genres.options"
         :checked-data="genres.selected"
       >
         Rating
-      </check-box>
+      </select-checkbox>
     </div>
     <div class="selectFilters__buttons">
       <base-button
@@ -40,13 +40,15 @@
 
 <script>
 import BaseButton from '@/components/BaseButton'
-import CheckBox from '@/components/CheckBox'
+import SelectCheckbox from '@/components/SelectCheckbox'
+import SelectRadio from '@/components/SelectRadio'
 import { mapActions } from 'vuex'
 export default {
   name: 'EntertainmentSelects',
   components: {
     BaseButton,
-    CheckBox
+    SelectCheckbox,
+    SelectRadio
   },
   data () {
     return {
@@ -132,7 +134,7 @@ export default {
         ]
       },
       releaseYear: {
-        selected: [],
+        selected: null,
         options: []
       },
       adult: {
@@ -154,7 +156,11 @@ export default {
     ...mapActions(['fetchGenres']),
     clearFilters () {
       this.genres.selected = []
-      this.adult.selected = null
+      /* reset child component val and parent data value  of select components */
+      this.releaseYear.selected = null
+      for (let r in this.$refs) {
+        this.$refs[r].reset()
+      }
     },
     applyFilters () {
       console.log('filters applied!')
