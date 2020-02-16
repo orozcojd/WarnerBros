@@ -1,33 +1,29 @@
 <template>
-  <div class="flex--between">
-    <div class="selectFilters__selectors">
-      <label for="Genres">Genres</label>
-      <select
-        name="Genres"
-        v-model="genres.selected"
-        multiple
-        size="6"
+  <div class="flex flex--between">
+    <div class="flex flex--start selectFilters__selectors">
+      <check-box
+        v-model="releaseYear.selected"
+        :data="releaseYear.options"
+        :checked-data="releaseYear.selected"
       >
-        <option
-          v-for="option in genres.options"
-          :key="option.id"
-          :value="option.id"
-        >
-          {{ option.name }}
-        </option>
-      </select>
-      <label for="Adult">Adult</label>
-      <select
-        name="Adult"
-        v-model="adult.selected">
-        <option
-          v-for="option in adult.options"
-          :key="option"
-          :value="option"
-        >
-          {{ option }}
-        </option>
-      </select>
+        Release Year
+      </check-box>
+      <check-box
+        v-model="genres.selected"
+        :data="genres.options"
+        :checked-data="genres.selected"
+      >
+        Genres
+      </check-box>
+      <!-- all elms with disabled attr share same object for simplicity -->
+      <check-box
+        :disabled="true"
+        v-model="genres.selected"
+        :data="genres.options"
+        :checked-data="genres.selected"
+      >
+        Rating
+      </check-box>
     </div>
     <div class="selectFilters__buttons">
       <base-button
@@ -44,11 +40,13 @@
 
 <script>
 import BaseButton from '@/components/BaseButton'
+import CheckBox from '@/components/CheckBox'
 import { mapActions } from 'vuex'
 export default {
   name: 'EntertainmentSelects',
   components: {
-    BaseButton
+    BaseButton,
+    CheckBox
   },
   data () {
     return {
@@ -133,6 +131,10 @@ export default {
           }
         ]
       },
+      releaseYear: {
+        selected: [],
+        options: []
+      },
       adult: {
         selected: null,
         options: [true, false]
@@ -140,6 +142,7 @@ export default {
     }
   },
   async mounted () {
+    this.populateYears()
     // await this.fetchGenres('movie')
     // .then(g => {
     // this.genres.options = g.genres
@@ -155,17 +158,29 @@ export default {
     },
     applyFilters () {
       console.log('filters applied!')
+    },
+    populateYears () {
+      const thisYear = new Date().getFullYear()
+      for (let i = thisYear; i > 1920; i--) {
+        this.releaseYear.options.push({ id: i, value: i })
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-  .flex--between {
+  .flex {
     display: flex;
     flex-wrap: wrap;
+  }
+  .flex--between {
     justify-content: space-between;
     align-items: flex-end;
+  }
+  .flex--start {
+    justify-content: start;
+    align-items: center;
   }
   .flex--between > div {
     margin-bottom: 2em;

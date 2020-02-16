@@ -105,12 +105,9 @@ export default {
   },
   data () {
     return {
-      loading: true,
       gridView: true,
       hover: false,
       selectedCategory: null,
-      mediaInfo: '',
-      dbmediaInfo: '',
       categories: [{
           type: 'All',
           route: '',
@@ -152,7 +149,6 @@ export default {
   async created () {
     this.selectedCategory = this.categories[1]
     // await this.fetchMedia({route: this.selectedCategory.route})
-    this.loading = false
   },
   methods: {
     ...mapActions(['fetchMedia', 'resetMedia']),
@@ -195,6 +191,7 @@ export default {
   .item__selected {
     border-bottom: 4px solid #859D8A;
     transition: all .5s ease-in;
+    font-weight: bold;
   }
   .item__hover:hover {
     border-bottom: 4px solid #E7F1E9;
