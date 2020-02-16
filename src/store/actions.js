@@ -3,9 +3,9 @@ import { SET_PAGE, SET_MEDIA, CLEAR_MEDIA, CLEAR_PAGE } from './mutations.types'
 import { ApiService } from '@/common/api.service'
 
 export default {
-  async [FETCH_MEDIA] ({ commit, dispatch }, payload) {
+  async [FETCH_MEDIA] ({ commit, dispatch }, route) {
     try {
-      const { data } = await ApiService().get(`${payload.route}${payload.page}`)
+      const { data } = await ApiService().get(route)
       dispatch(INC_PAGE, data.page + 1)
       commit(SET_MEDIA, data.results)
     } catch (e) {

@@ -9,7 +9,6 @@ import store from '@/store/index'
 import { sync } from 'vuex-router-sync'
 
 Vue.config.productionTip = false
-
 sync(store, router)
 
 /* eslint-disable no-new */

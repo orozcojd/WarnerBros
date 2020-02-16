@@ -36,7 +36,12 @@
         alt="view-list"
       >
     </div>
-    <entertainment-selects/>
+    <entertainment-selects
+      @filterData="filterData"
+      @clearFilters="filterData"
+      :category="selectedCategory"
+      ref="selectInputRef"
+    />
     <div
       v-if="media.length && filterMedia.length"
       key="filterMedia"
@@ -78,13 +83,13 @@
         />
       </div>
     </div>
-    <!-- <div
+    <div
       class="container"
-      v-else-if="loaded && !filterMovies.length"
+      v-if="loaded && !media.length"
       key="noResults"
     >
-      <h1>Try refining your search...</h1>
-    </div> -->
+      <h1>0 results found, try refining your search...</h1>
+    </div>
   </div>
 </template>
 <script async src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
@@ -105,6 +110,7 @@ export default {
   },
   data () {
     return {
+      loaded: false,
       gridView: true,
       hover: false,
       selectedCategory: null,
@@ -115,11 +121,11 @@ export default {
         },
         {
           type: 'Movies',
-          route: '/discover/movie?page='
+          route: '/discover/movie'
         },
         {
           type: 'TV Shows',
-          route: '/tv/popular?page='
+          route: '/discover/tv'
         },
         {
           type: 'Games and Apps',
@@ -148,23 +154,46 @@ export default {
   },
   async created () {
     this.selectedCategory = this.categories[1]
-    // await this.fetchMedia({route: this.selectedCategory.route})
+    await this.fetchMedia(this.selectedCategory.route)
+    this.loaded = true
   },
   methods: {
     ...mapActions(['fetchMedia', 'resetMedia']),
     async loadMore() {
-      await this.fetchMedia({
-        route:this.selectedCategory.route,
-        page: this.page
-        })
+      const query = this.buildQueryString()
+      await this.fetchMedia(this.selectedCategory.route + query)
     },
     async selectCategory(c) {
       if(c!== this.selectedCategory) {
         this.selectedCategory = c
         this.resetMedia()
-        await this.fetchMedia({route:this.selectedCategory.route})
+        await this.loadMore()
       }
     },
+    async filterData() {
+      this.resetMedia()
+      await this.loadMore()
+    },
+
+    /* may need to refactor..later */
+    buildQueryString() {
+      const page = !this.page ? 1 : this.page
+      let query = `?page=${page}`
+      let child = this.$refs.selectInputRef
+      const genresSelected = child.genres.selected
+      const yearSelected = child.releaseYear.selected
+      const yearQ = this.selectedCategory.type === 'Movies' ? 'primary_release_year' : 'first_air_date_year'
+      if(genresSelected.length) {
+        query += '&with_genres='
+        genresSelected.forEach(g => {
+          query += `${g},`
+        });
+      }
+      if(yearSelected) {
+        query += `&${yearQ}=${yearSelected}`
+      }
+      return query
+    }
   }
 }
 </script>

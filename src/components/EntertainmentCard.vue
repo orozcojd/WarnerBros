@@ -11,7 +11,7 @@
       <img
         :src="img"
         alt="movie-img"
-        loading="lazy"
+        class="lazyload"
       >
     </div>
     <div

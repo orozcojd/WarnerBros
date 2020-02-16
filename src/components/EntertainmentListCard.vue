@@ -3,7 +3,7 @@
     <img
       :src="img"
       alt="movie-img"
-      loading="lazy"
+      class="lazyload"
     >
     <div class='list__card__details'>
       <slot name="media-type" />

@@ -31,8 +31,9 @@
         name="clear filters"
       />
       <base-button
-        :on-click="applyFilters"
         name="apply filters"
+        :on-click="applyFilters"
+        :selected="filter"
       />
     </div>
   </div>
@@ -50,122 +51,53 @@ export default {
     SelectCheckbox,
     SelectRadio
   },
+  props: {
+    category: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
+      filter: false,
       genres: {
         selected: [],
-        options: [
-          {
-            'id': 28,
-            'name': 'Action'
-          },
-          {
-            'id': 12,
-            'name': 'Adventure'
-          },
-          {
-            'id': 16,
-            'name': 'Animation'
-          },
-          {
-            'id': 35,
-            'name': 'Comedy'
-          },
-          {
-            'id': 80,
-            'name': 'Crime'
-          },
-          {
-            'id': 99,
-            'name': 'Documentary'
-          },
-          {
-            'id': 18,
-            'name': 'Drama'
-          },
-          {
-            'id': 10751,
-            'name': 'Family'
-          },
-          {
-            'id': 14,
-            'name': 'Fantasy'
-          },
-          {
-            'id': 36,
-            'name': 'History'
-          },
-          {
-            'id': 27,
-            'name': 'Horror'
-          },
-          {
-            'id': 10402,
-            'name': 'Music'
-          },
-          {
-            'id': 9648,
-            'name': 'Mystery'
-          },
-          {
-            'id': 10749,
-            'name': 'Romance'
-          },
-          {
-            'id': 878,
-            'name': 'Science Fiction'
-          },
-          {
-            'id': 10770,
-            'name': 'TV Movie'
-          },
-          {
-            'id': 53,
-            'name': 'Thriller'
-          },
-          {
-            'id': 10752,
-            'name': 'War'
-          },
-          {
-            'id': 37,
-            'name': 'Western'
-          }
-        ]
+        options: []
       },
       releaseYear: {
         selected: null,
         options: []
-      },
-      adult: {
-        selected: null,
-        options: [true, false]
       }
     }
   },
   async mounted () {
     this.populateYears()
-    // await this.fetchGenres('movie')
-    // .then(g => {
-    // this.genres.options = g.genres
-    // this.genres.selected = [this.genres.options[0].id]
-    // })
-    // .catch('handle error!')
+    await this.fetchGenres('movie')
+      .then(g => {
+        this.genres.options = g.genres
+        this.genres.selected = [this.genres.options[0].id]
+      })
+      .catch('handle error!')
   },
   methods: {
     ...mapActions(['fetchGenres']),
     clearFilters () {
+      this.filter = false
       this.genres.selected = []
-      /* reset child component val and parent data value  of select components */
       this.releaseYear.selected = null
+
+      /* reset child component val and parent data value  of select components */
       for (let r in this.$refs) {
         this.$refs[r].reset()
       }
+      this.$emit('clearFilters')
     },
     applyFilters () {
-      console.log('filters applied!')
+      if (!this.filter) this.filter = true
+      this.$emit('filterData')
     },
     populateYears () {
+      this.releaseYear.options.push({id: null, value: 'All'})
       const thisYear = new Date().getFullYear()
       for (let i = thisYear; i > 1920; i--) {
         this.releaseYear.options.push({ id: i, value: i })

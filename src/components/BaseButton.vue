@@ -2,6 +2,7 @@
   <button
     @click="onClick"
     :style="btnSize"
+    :class="{selected: selected}"
   >
     {{ name.toUpperCase() }}
   </button>
@@ -18,6 +19,10 @@ export default {
     onClick: {
       type: Function,
       required: true
+    },
+    selected: {
+      type: Boolean,
+      default: false
     },
     size: {
       default: 'sm',
@@ -65,5 +70,9 @@ export default {
   }
   button:hover {
     background: #E7F1E9;
+  }
+  .selected {
+    background: #859D8A;
+    color: white;
   }
 </style>
