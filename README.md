@@ -1,4 +1,4 @@
-# Warner Bros
+# Movie Browser
 > A Vuejs application for Movie/TV Show lovers
 
 This application is powered by [TheMovieDB](https://www.themoviedb.org/settings/api)
