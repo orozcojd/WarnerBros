@@ -1,0 +1,35 @@
+image: node
+
+stages:
+  - build
+  - test
+  - deploy
+
+build: 
+  stage: build
+  script:
+    - echo "Building"
+    - npm install
+    - npm run build
+  artifacts: # files in this path can be used in the next build steps
+    expire_in: 1 week
+    paths:
+      # - node_modules
+      - dist
+
+test:
+  stage: test
+  script: 
+    - npm install
+    - echo "Testing..."
+    - echo "Running some more tests...."
+    - echo "All done!"
+    - npm run test
+
+deploy:
+  stage: deploy
+  - echo " deploying application..."
+  tags: 
+    - docker
+
+    
