@@ -28,7 +28,8 @@ test:
 
 deploy:
   stage: deploy
-  - echo " deploying application..."
+  script:
+    - echo " deploying application..."
   tags: 
     - docker
 
